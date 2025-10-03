@@ -107,21 +107,6 @@ The architecture of the Smart Health Assistant follows a modular and layered app
 | Cloud Infrastructure | Hosts application components on AWS/Google Cloud for scalability and reliability. |
 
 
-## Project Timeline
-### Chapter 5: Project Timeline
-#### 5.1 Overview
-Effective time management is crucial for the successful implementation of the Smart Health Assistant project. This chapter outlines the key phases of the project lifecycle, associated activities, and estimated timelines. The project is divided into six main phases, each focusing on specific deliverables, ensuring smooth progression and timely completion.
-
-#### 5.2 Gantt Chart
-The following Gantt chart represents the proposed project schedule visually:
-- **Literature Review**: May 2025
-- **System Design**: June 2025
-- **Backend Development**: July 2025
-- **Frontend Development**: July-August 2025
-- **Integration and Testing**: August 2025
-- **Finalization and Documentation**: September 2025
-
-
 ## Setup Instructions
 1. **Prerequisites**:
    - Install Python 3.10+ (e.g., via Homebrew: `brew install python`).
