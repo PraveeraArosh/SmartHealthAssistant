@@ -40,7 +40,7 @@ The proposed system architecture consists of the following major components:
 | Notification System   | Push notifications and email alerts about health checkups, preventive tests, and reminders. |
 | Cloud Hosting Platform | AWS, Google Cloud, or Heroku to deploy the backend API and manage storage scalability. |
 
-![System Architecture Diagram](docs/Figure1_SystemArchitectureDiagram.png)
+
 
 #### 2.3 Key Functional Modules
 - **2.3.1 User Registration and Profile Management**
@@ -62,7 +62,7 @@ The general workflow for a user includes:
 5. Receive Notifications and Updates.
 6. Review/Save/Share Health Reports.
 
-![User Interaction Diagram](docs/Figure2_UserInteractionDiagram.png)
+
 
 ## Technologies and Resources
 ### Chapter 3: Technologies and Resources
@@ -106,8 +106,6 @@ The architecture of the Smart Health Assistant follows a modular and layered app
 | Database (SQLite)  | Stores user profiles, health records, chatbot conversations, and health plans securely. |
 | Cloud Infrastructure | Hosts application components on AWS/Google Cloud for scalability and reliability. |
 
-#### 4.2 Data Flow Diagram (DFD) — Level 0
-![DFD Diagram](docs/Figure3_DFDdiagram.png)
 
 ## Project Timeline
 ### Chapter 5: Project Timeline
@@ -123,7 +121,6 @@ The following Gantt chart represents the proposed project schedule visually:
 - **Integration and Testing**: August 2025
 - **Finalization and Documentation**: September 2025
 
-![Gantt Chart](docs/Figure4_GanttChart.png)
 
 ## References
 - Bass, L., Clements, P., & Kazman, R. (2012). *Software architecture in practice* (3rd ed.). Addison-Wesley Professional.
