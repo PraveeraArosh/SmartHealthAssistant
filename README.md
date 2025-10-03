@@ -122,12 +122,6 @@ The following Gantt chart represents the proposed project schedule visually:
 - **Finalization and Documentation**: September 2025
 
 
-## References
-- Bass, L., Clements, P., & Kazman, R. (2012). *Software architecture in practice* (3rd ed.). Addison-Wesley Professional.
-- Project Management Institute. (2017). *A guide to the project management body of knowledge (PMBOK® Guide)* (6th ed.). Project Management Institute.
-- World Health Organization. (2021). *Global strategy on digital health 2020–2025*. https://www.who.int/publications/i/item/9789240020924
-- Lee, J., & Yoon, W. (2021). Emerging trends in telemedicine and digital health solutions: A review. *Journal of Medical Internet Research, 23*(5), e24908. https://doi.org/10.2196/24908
-
 ## Setup Instructions
 1. **Prerequisites**:
    - Install Python 3.10+ (e.g., via Homebrew: `brew install python`).
