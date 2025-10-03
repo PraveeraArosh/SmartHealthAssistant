@@ -38,9 +38,23 @@ if page == "Home":
             if st.form_submit_button("Submit"):
                 st.session_state.guest_profile = {"age": age, "gender": gender, "medical_condition": medical_condition}
                 st.success("Guest mode activated. Redirecting to Symptom Checker...")
-                # Redirect to Symptom Checker
-                st.session_state.page = "Symptom Checker"  # Set the page in session state
+                # Bypass sidebar and directly render Symptom Checker
+                st.session_state._guest_redirect = True  # Custom flag for redirect
                 st.rerun()
+
+# Custom logic to handle guest redirect
+if getattr(st.session_state, '_guest_redirect', False):
+    st.session_state._guest_redirect = False  # Reset flag after use
+    # Directly render Symptom Checker content without sidebar interference
+    st.subheader("Symptom Checker Chatbot")
+    if st.session_state.guest_profile:
+        symptoms = st.text_area("Describe your symptoms")
+        if st.button("Get Advice"):
+            response = get_chatbot_response(symptoms)
+            st.write("Chatbot Response:", response)
+    else:
+        st.warning("Profile details not available.")
+    st.stop()  # Prevent further page rendering
 
 elif page == "Register":
     st.subheader("Register")
@@ -66,7 +80,7 @@ elif page == "Login":
             st.session_state.user_id = user_id
             st.session_state.profile = get_user_profile(user_id)
             st.session_state.guest_mode = False
-            st.success("Logged in successfully.")
+            st.success("Login successful! Welcome back.")  # Success message
             st.rerun()
         else:
             st.error("Invalid credentials.")
