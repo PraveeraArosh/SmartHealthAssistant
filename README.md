@@ -142,8 +142,3 @@ EMAIL_PASSWORD=your_app_password
 - **Health Plan**: View personalized health recommendations.
 - **Symptom Checker**: Use the chatbot to analyze symptoms.
 - **Notifications**: Receive email reminders (for registered users).
-
-## Contributing
-Feel free to fork this repository, make improvements, and submit pull requests. Ensure you follow the project structure and update the documentation accordingly.
-
-## License
