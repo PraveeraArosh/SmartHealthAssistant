@@ -22,79 +22,75 @@ if 'guest_profile' not in st.session_state:
 
 st.title("Smart Health Assistant")
 
-# Sidebar for navigation
-page = st.sidebar.selectbox("Navigate", ["Home", "Register", "Login", "Profile", "Health Plan", "Symptom Checker", "Notifications", "History", "Logout"])
-
-if page == "Home":
-    st.write("Welcome to Smart Health Assistant. Please register or login to get personalized health advice. Or use guest mode.")
-    if st.button("Guest Mode"):
-        st.session_state.guest_mode = True
-        st.session_state.guest_profile = None  # Reset guest profile
+if st.session_state.guest_mode:
+    if st.session_state.guest_profile is None:
         # Prompt for guest details
+        st.subheader("Guest Mode - Enter Your Details")
         with st.form("guest_form"):
             age = st.number_input("Age", min_value=20, max_value=100)
             gender = st.selectbox("Gender", ["Male", "Female", "Other"])
-            medical_condition = st.text_area("Medical Condition (optional)")
+            health_condition = st.text_area("Health Condition (optional)")
             if st.form_submit_button("Submit"):
-                st.session_state.guest_profile = {"age": age, "gender": gender, "medical_condition": medical_condition}
-                st.success("Guest mode activated. Redirecting to Symptom Checker...")
-                # Bypass sidebar and directly render Symptom Checker
-                st.session_state._guest_redirect = True  # Custom flag for redirect
+                st.session_state.guest_profile = {"age": age, "gender": gender, "health_condition": health_condition}
+                st.success("Details submitted. Redirecting to Symptom Checker...")
                 st.rerun()
-
-# Custom logic to handle guest redirect
-if getattr(st.session_state, '_guest_redirect', False):
-    st.session_state._guest_redirect = False  # Reset flag after use
-    # Directly render Symptom Checker content without sidebar interference
-    st.subheader("Symptom Checker Chatbot")
-    if st.session_state.guest_profile:
+    else:
+        # Only render Symptom Checker for guest
+        st.subheader("Symptom Checker Chatbot")
         symptoms = st.text_area("Describe your symptoms")
         if st.button("Get Advice"):
             response = get_chatbot_response(symptoms)
             st.write("Chatbot Response:", response)
-    else:
-        st.warning("Profile details not available.")
-    st.stop()  # Prevent further page rendering
-
-elif page == "Register":
-    st.subheader("Register")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    email = st.text_input("Email")
-    age = st.number_input("Age", min_value=20, max_value=100)
-    gender = st.selectbox("Gender", ["Male", "Female", "Other"])
-    health_history = st.text_area("Basic Health History")
-    if st.button("Register"):
-        success, message = register_user(username, password, email, age, gender, health_history)
-        st.write(message)
-        if success:
-            st.success("Registered successfully. Please login.")
-
-elif page == "Login":
-    st.subheader("Login")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        user_id = login_user(username, password)
-        if user_id:
-            st.session_state.user_id = user_id
-            st.session_state.profile = get_user_profile(user_id)
+        # Button to exit guest mode
+        if st.button("Exit Guest Mode"):
             st.session_state.guest_mode = False
-            st.success("Login successful! Welcome back.")  # Success message
+            st.session_state.guest_profile = None
             st.rerun()
-        else:
-            st.error("Invalid credentials.")
+else:
+    # Sidebar for navigation in non-guest mode
+    page_options = ["Home", "Register", "Login"]
+    if st.session_state.user_id:
+        page_options += ["Profile", "Health Plan", "Symptom Checker", "Notifications", "History", "Logout"]
+    page = st.sidebar.selectbox("Navigate", page_options)
 
-elif page == "Profile":
-    if st.session_state.user_id or st.session_state.guest_mode:
-        st.subheader("Profile")
-        if st.session_state.guest_mode and st.session_state.guest_profile:
-            profile = st.session_state.guest_profile
-            age = st.number_input("Age (Guest)", value=profile['age'], min_value=20, max_value=100)
-            gender = st.selectbox("Gender (Guest)", ["Male", "Female", "Other"], index=["Male", "Female", "Other"].index(profile['gender']))
-            medical_condition = st.text_area("Medical Condition (Guest)", value=profile['medical_condition'])
-            st.session_state.guest_profile = {"age": age, "gender": gender, "medical_condition": medical_condition}
-        else:
+    if page == "Home":
+        st.write("Welcome to Smart Health Assistant. Please register or login to get personalized health advice. Or use guest mode.")
+        if st.button("Guest Mode"):
+            st.session_state.guest_mode = True
+            st.session_state.guest_profile = None
+            st.rerun()
+
+    elif page == "Register":
+        st.subheader("Register")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        email = st.text_input("Email")
+        age = st.number_input("Age", min_value=20, max_value=100)
+        gender = st.selectbox("Gender", ["Male", "Female", "Other"])
+        health_history = st.text_area("Basic Health History")
+        if st.button("Register"):
+            success, message = register_user(username, password, email, age, gender, health_history)
+            st.write(message)
+            if success:
+                st.success("Registered successfully. Please login.")
+
+    elif page == "Login":
+        st.subheader("Login")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        if st.button("Login"):
+            user_id = login_user(username, password)
+            if user_id:
+                st.session_state.user_id = user_id
+                st.session_state.profile = get_user_profile(user_id)
+                st.success("Login successful! Welcome back.")
+                st.rerun()
+            else:
+                st.error("Invalid credentials.")
+
+    elif page == "Profile":
+        if st.session_state.user_id:
+            st.subheader("Profile")
             profile = st.session_state.profile
             age = st.number_input("Age", value=profile['age'], min_value=20, max_value=100)
             gender = st.selectbox("Gender", ["Male", "Female", "Other"], index=["Male", "Female", "Other"].index(profile['gender']))
@@ -103,77 +99,64 @@ elif page == "Profile":
                 update_user_profile(st.session_state.user_id, age, gender, health_history)
                 st.session_state.profile = get_user_profile(st.session_state.user_id)
                 st.success("Profile updated.")
-    else:
-        st.warning("Please login or use guest mode.")
+        else:
+            st.warning("Please login.")
 
-elif page == "Health Plan":
-    if st.session_state.user_id or (st.session_state.guest_mode and st.session_state.guest_profile):
-        st.subheader("Personalized Health Plan")
-        profile = st.session_state.profile if st.session_state.user_id else st.session_state.guest_profile
-        if profile:
+    elif page == "Health Plan":
+        if st.session_state.user_id:
+            st.subheader("Personalized Health Plan")
+            profile = st.session_state.profile
             plan = generate_health_plan(profile['age'], profile['gender'])
             st.write("**Screenings:**", plan['screenings'])
             st.write("**Exercise Plan:**", plan['exercise'])
             st.write("**Vitamin Suggestions:**", plan['vitamins'])
             st.write("**Meal Planning:**", plan['meals'])
-            if st.session_state.user_id and st.button("Save Plan"):
+            if st.button("Save Plan"):
                 save_recommendation(st.session_state.user_id, "Health Plan", str(plan))
                 st.success("Plan saved.")
         else:
-            st.warning("Please provide your profile details first.")
-    else:
-        st.warning("Please login or use guest mode with profile details.")
+            st.warning("Please login.")
 
-elif page == "Symptom Checker":
-    if st.session_state.user_id or (st.session_state.guest_mode and st.session_state.guest_profile):
-        st.subheader("Symptom Checker Chatbot")
-        profile = st.session_state.profile if st.session_state.user_id else st.session_state.guest_profile
-        if profile:
+    elif page == "Symptom Checker":
+        if st.session_state.user_id:
+            st.subheader("Symptom Checker Chatbot")
+            profile = st.session_state.profile
             symptoms = st.text_area("Describe your symptoms")
             if st.button("Get Advice"):
                 response = get_chatbot_response(symptoms)
                 st.write("Chatbot Response:", response)
-                if st.session_state.user_id:
-                    save_chat_interaction(st.session_state.user_id, symptoms, response)
+                save_chat_interaction(st.session_state.user_id, symptoms, response)
         else:
-            st.warning("Please provide your profile details first.")
-    else:
-        st.warning("Please login or use guest mode with profile details.")
+            st.warning("Please login.")
 
-elif page == "Notifications":
-    if st.session_state.user_id:
-        st.subheader("Notifications")
-        message = st.text_input("Notification Message (for testing)")
-        if st.button("Send Email Reminder"):
-            profile = st.session_state.profile
-            send_email_notification(profile['email'], "Health Reminder", message)
-            st.success("Email sent.")
-    elif st.session_state.guest_mode:
-        st.warning("Notifications not available in guest mode.")
-    else:
-        st.warning("Please login.")
+    elif page == "Notifications":
+        if st.session_state.user_id:
+            st.subheader("Notifications")
+            message = st.text_input("Notification Message (for testing)")
+            if st.button("Send Email Reminder"):
+                profile = st.session_state.profile
+                send_email_notification(profile['email'], "Health Reminder", message)
+                st.success("Email sent.")
+        else:
+            st.warning("Please login.")
 
-elif page == "History":
-    if st.session_state.user_id:
-        st.subheader("History")
-        st.write("**Recommendations History:**")
-        recs = get_recommendations(st.session_state.user_id)
-        for rec in recs:
-            st.write(f"{rec['date']}: {rec['type']} - {rec['content']}")
-        
-        st.write("**Chat History:**")
-        chats = get_chat_history(st.session_state.user_id)
-        for chat in chats:
-            st.write(f"{chat['date']}: User: {chat['message']} - Bot: {chat['response']}")
-    elif st.session_state.guest_mode:
-        st.warning("History not available in guest mode.")
-    else:
-        st.warning("Please login.")
+    elif page == "History":
+        if st.session_state.user_id:
+            st.subheader("History")
+            st.write("**Recommendations History:**")
+            recs = get_recommendations(st.session_state.user_id)
+            for rec in recs:
+                st.write(f"{rec['date']}: {rec['type']} - {rec['content']}")
+            
+            st.write("**Chat History:**")
+            chats = get_chat_history(st.session_state.user_id)
+            for chat in chats:
+                st.write(f"{chat['date']}: User: {chat['message']} - Bot: {chat['response']}")
+        else:
+            st.warning("Please login.")
 
-elif page == "Logout":
-    st.session_state.user_id = None
-    st.session_state.guest_mode = False
-    st.session_state.guest_profile = None
-    st.session_state.profile = None
-    st.success("Logged out.")
-    st.rerun()
+    elif page == "Logout":
+        st.session_state.user_id = None
+        st.session_state.profile = None
+        st.success("Logged out.")
+        st.rerun()
