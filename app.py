@@ -1,3 +1,4 @@
+# Modified app.py
 import streamlit as st
 import sqlite3
 from db import init_db, register_user, login_user, get_user_profile, update_user_profile, save_recommendation, get_recommendations, save_chat_interaction, get_chat_history
@@ -63,13 +64,14 @@ else:
     elif page == "Register":
         st.subheader("Register")
         username = st.text_input("Username")
+        full_name = st.text_input("Full Name")
         password = st.text_input("Password", type="password")
         email = st.text_input("Email")
         age = st.number_input("Age", min_value=20, max_value=100)
         gender = st.selectbox("Gender", ["Male", "Female", "Other"])
         health_history = st.text_area("Basic Health History")
         if st.button("Register"):
-            success, message = register_user(username, password, email, age, gender, health_history)
+            success, message = register_user(username, password, email, age, gender, health_history, full_name)
             st.write(message)
             if success:
                 st.success("Registered successfully. Please login.")
@@ -92,11 +94,12 @@ else:
         if st.session_state.user_id:
             st.subheader("Profile")
             profile = st.session_state.profile
+            full_name = st.text_input("Full Name", value=profile['full_name'])
             age = st.number_input("Age", value=profile['age'], min_value=20, max_value=100)
             gender = st.selectbox("Gender", ["Male", "Female", "Other"], index=["Male", "Female", "Other"].index(profile['gender']))
             health_history = st.text_area("Basic Health History", value=profile['health_history'])
             if st.button("Update Profile"):
-                update_user_profile(st.session_state.user_id, age, gender, health_history)
+                update_user_profile(st.session_state.user_id, age, gender, health_history, full_name)
                 st.session_state.profile = get_user_profile(st.session_state.user_id)
                 st.success("Profile updated.")
         else:

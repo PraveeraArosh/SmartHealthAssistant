@@ -1,3 +1,4 @@
+# Modified db.py
 import sqlite3
 import bcrypt
 from datetime import datetime
@@ -8,7 +9,7 @@ def init_db():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS users
-                 (id INTEGER PRIMARY KEY, username TEXT UNIQUE, password_hash TEXT, email TEXT, age INTEGER, gender TEXT, health_history TEXT)''')
+                 (id INTEGER PRIMARY KEY, username TEXT UNIQUE, password_hash TEXT, email TEXT, age INTEGER, gender TEXT, health_history TEXT, full_name TEXT)''')
     c.execute('''CREATE TABLE IF NOT EXISTS recommendations
                  (id INTEGER PRIMARY KEY, user_id INTEGER, type TEXT, content TEXT, date TEXT)''')
     c.execute('''CREATE TABLE IF NOT EXISTS chat_interactions
@@ -16,13 +17,13 @@ def init_db():
     conn.commit()
     conn.close()
 
-def register_user(username, password, email, age, gender, health_history):
+def register_user(username, password, email, age, gender, health_history, full_name):
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     try:
         password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-        c.execute("INSERT INTO users (username, password_hash, email, age, gender, health_history) VALUES (?, ?, ?, ?, ?, ?)",
-                  (username, password_hash, email, age, gender, health_history))
+        c.execute("INSERT INTO users (username, password_hash, email, age, gender, health_history, full_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                  (username, password_hash, email, age, gender, health_history, full_name))
         conn.commit()
         return True, "Success"
     except sqlite3.IntegrityError:
@@ -43,16 +44,16 @@ def login_user(username, password):
 def get_user_profile(user_id):
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("SELECT age, gender, health_history, email FROM users WHERE id = ?", (user_id,))
+    c.execute("SELECT age, gender, health_history, email, full_name FROM users WHERE id = ?", (user_id,))
     profile = c.fetchone()
     conn.close()
-    return {"age": profile[0], "gender": profile[1], "health_history": profile[2], "email": profile[3]}
+    return {"age": profile[0], "gender": profile[1], "health_history": profile[2], "email": profile[3], "full_name": profile[4]}
 
-def update_user_profile(user_id, age, gender, health_history):
+def update_user_profile(user_id, age, gender, health_history, full_name):
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("UPDATE users SET age = ?, gender = ?, health_history = ? WHERE id = ?",
-              (age, gender, health_history, user_id))
+    c.execute("UPDATE users SET age = ?, gender = ?, health_history = ?, full_name = ? WHERE id = ?",
+              (age, gender, health_history, full_name, user_id))
     conn.commit()
     conn.close()
 
