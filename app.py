@@ -1,7 +1,7 @@
 # Modified app.py
 import streamlit as st
 import sqlite3
-from db import init_db, register_user, login_user, get_user_profile, update_user_profile, save_recommendation, get_recommendations, save_chat_interaction, get_chat_history
+from db import init_db, register_user, login_user, get_user_profile, update_user_profile, save_recommendation, get_recommendations, save_chat_interaction, get_chat_history, change_password
 from health_recommendations import generate_health_plan
 from symptom_chatbot import get_chatbot_response
 from notifications import send_email_notification
@@ -102,6 +102,19 @@ else:
                 update_user_profile(st.session_state.user_id, age, gender, health_history, full_name)
                 st.session_state.profile = get_user_profile(st.session_state.user_id)
                 st.success("Profile updated.")
+
+            st.subheader("Change Password")
+            current_password = st.text_input("Current Password", type="password")
+            new_password = st.text_input("New Password", type="password")
+            if st.button("Update Password"):
+                if current_password and new_password:
+                    success = change_password(st.session_state.user_id, current_password, new_password)
+                    if success:
+                        st.success("Password updated successfully.")
+                    else:
+                        st.error("Current password is incorrect.")
+                else:
+                    st.warning("Please provide both current and new passwords.")
         else:
             st.warning("Please login.")
 

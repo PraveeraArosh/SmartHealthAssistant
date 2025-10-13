@@ -57,6 +57,21 @@ def update_user_profile(user_id, age, gender, health_history, full_name):
     conn.commit()
     conn.close()
 
+def change_password(user_id, current_password, new_password):
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute("SELECT password_hash FROM users WHERE id = ?", (user_id,))
+    user = c.fetchone()
+    if user and bcrypt.checkpw(current_password.encode(), user[0]):
+        new_hash = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt())
+        c.execute("UPDATE users SET password_hash = ? WHERE id = ?", (new_hash, user_id))
+        conn.commit()
+        conn.close()
+        return True
+    else:
+        conn.close()
+        return False
+
 def save_recommendation(user_id, rec_type, content):
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
